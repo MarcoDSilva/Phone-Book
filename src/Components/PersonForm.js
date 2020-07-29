@@ -1,14 +1,14 @@
 import React from "react";
 
-const PersonForm = (props) => {
+const PersonForm = ({addPerson, personName, personHandler, phoneNumber, phoneHandler}) => {
   return (
-    <form onSubmit={props.addPerson}>
+    <form onSubmit={addPerson}>
       <div>
-        name: <input value={props.personName} onChange={props.personHandler} />
+        name: <input value={personName} onChange={personHandler} />
       </div>
       <div>
-        number:{" "}
-        <input value={props.phoneNumber} onChange={props.phoneHandler} />
+        number:
+        <input value={phoneNumber} onChange={phoneHandler} />
       </div>
       <div>
         <button type="submit">add</button>

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Filter from "./Components/Filter.js";
 import PersonForm from "./Components/PersonForm.js";
 import Persons from "./Components/Persons.js";
-import axios from 'axios'
+import axios from "axios";
+import services from "./Services/database.js";
 
 const App = () => {
   // array of people and method to update it
@@ -11,16 +12,13 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [newFilter, setNewFilter] = useState("");
 
-  // fetching api data 
-  const hook = () => {
-    axios.get('http://localhost:3001/persons').then(res => {
-      console.log('promise fulfilled')
-      setPersons(res.data)
-    })
-  }
-
   // aplying the data fetched with the hook
-  useEffect(hook, [])
+  useEffect(() => {
+    services
+      .getAll()
+      .then((res) => setPersons(res))
+      .catch((err) => console.log("error loading info" + err));
+  }, []);
 
   const resetForm = () => {
     setNewName("");
@@ -30,8 +28,7 @@ const App = () => {
   //adding a new person to our state
   const addPerson = (e) => {
     e.preventDefault();
-    console.log("clicked the btn", e.target);
-   
+
     // we try to find if this new name already exists
     const nameExists = persons.find((n) => n.name === newName);
 
@@ -45,11 +42,20 @@ const App = () => {
     const nameObj = {
       name: newName,
       number: newPhone,
+      id: persons.length + 1,
     };
 
-    setPersons(persons.concat(nameObj));
-    resetForm();
-  };
+    const baseURL = "http://localhost:3001/persons";
+
+    // updating the local json server data
+    axios
+      .create(nameObj)
+      .then(res => {
+          setPersons(persons.concat(res))
+          resetForm()
+      })
+      .catch(err => console.log('error, info could not be added'));
+}
 
   // it gets the info from the input form
   const handleNameChange = (e) => {
