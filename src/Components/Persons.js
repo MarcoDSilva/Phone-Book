@@ -1,11 +1,12 @@
 import React from "react";
 
-const Persons = (props) => {
+const Persons = ({ filter, deletePerson }) => {
   return (
     <section>
-      {props.filter().map((p) => (
-        <p key={p.name}>
-          {p.name} - {p.number}
+      {filter().map((p) => (
+        <p key={p.id}>
+          {p.name} - {p.number}{" "}
+          <button onClick={() => deletePerson(p.id, p.name)}>delete</button>
         </p>
       ))}
     </section>

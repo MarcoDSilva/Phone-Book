@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Filter from "./Components/Filter.js";
 import PersonForm from "./Components/PersonForm.js";
 import Persons from "./Components/Persons.js";
-import axios from "axios";
 import services from "./Services/database.js";
 
 const App = () => {
@@ -42,20 +41,31 @@ const App = () => {
     const nameObj = {
       name: newName,
       number: newPhone,
-      id: persons.length + 1,
+      id: Math.floor(Math.random() * 1000),
     };
 
-    const baseURL = "http://localhost:3001/persons";
-
     // updating the local json server data
-    axios
+    services
       .create(nameObj)
-      .then(res => {
-          setPersons(persons.concat(res))
-          resetForm()
+      .then((res) => {
+        setPersons(persons.concat(res));
+        resetForm();
       })
-      .catch(err => console.log('error, info could not be added'));
-}
+      .catch((err) => console.log("error, info could not be added"));
+  };
+
+  // handler to delete the person with respective id
+  const deletePerson = (id, name) => {
+    const del = window.confirm(`Delete ${name} ?`);
+    console.log(del);
+
+    if (del === true) {
+      services.remove(id).catch((err) => console.log(err));
+      setPersons(persons.filter((p) => p.id !== id));
+    } else {
+      return;
+    }
+  };
 
   // it gets the info from the input form
   const handleNameChange = (e) => {
@@ -95,7 +105,7 @@ const App = () => {
       />
 
       <h2>Numbers:</h2>
-      <Persons person={persons} filter={filteredState} />
+      <Persons filter={filteredState} deletePerson={deletePerson} />
     </div>
   );
 };
