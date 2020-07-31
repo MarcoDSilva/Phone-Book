@@ -4,12 +4,21 @@ import PersonForm from "./Components/PersonForm.js";
 import Persons from "./Components/Persons.js";
 import services from "./Services/database.js";
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="sucess">{message}</div>;
+};
+
 const App = () => {
   // array of people and method to update it
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [sucessNotification, setNewSucessNotification] = useState(null);
 
   // aplying the data fetched with the hook
   useEffect(() => {
@@ -53,6 +62,12 @@ const App = () => {
             number: newPhone,
           })
           .then((res) => {
+            setNewSucessNotification(`Updated ${res.name} phone contact`);
+
+            setTimeout(() => {
+              setNewSucessNotification(null);
+            }, 3000);
+
             setPersons(
               persons.map((p) => {
                 if (p.id === toUpdate.id) {
@@ -80,6 +95,12 @@ const App = () => {
     services
       .create(nameObj)
       .then((res) => {
+        setNewSucessNotification(`Added ${res.name} to the list`);
+
+        setTimeout(() => {
+          setNewSucessNotification(null);
+        }, 3000);
+
         setPersons(persons.concat(res));
         resetForm();
       })
@@ -125,6 +146,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={sucessNotification} />
       <Filter newFilter={newFilter} handleFilter={handleFilter} />
 
       <h2>Add a new:</h2>
