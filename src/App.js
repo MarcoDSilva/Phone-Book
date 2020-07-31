@@ -31,10 +31,44 @@ const App = () => {
     // we try to find if this new name already exists
     const nameExists = persons.find((n) => n.name === newName);
 
-    // if the name exists, we alert the user and end this method
+    // if the name exists, we ask confirmation to know if we change the old number or not
+    //
     if (nameExists) {
-      alert(`${newName} is already added to the phonebook`);
-      resetForm();
+      const confirm = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+
+      if (confirm) {
+        const toUpdate = persons.find((n) => {
+          if (n.name === newName) {
+            return n;
+          }
+          return null;
+        });
+
+        // updating the respective info we obtained from the phone input
+        services
+          .update(toUpdate.id, {
+            ...toUpdate,
+            number: newPhone,
+          })
+          .then((res) => {
+            let p = [];
+            for (let i = 0; i < persons.length; i++) {
+              if (persons[i].id === toUpdate.id) {
+                let obj = Object.assign({}, res);
+                p.push(obj);
+              } else {
+                p.push(persons[i]);
+              }
+            }
+
+            setPersons(p);
+          })
+          .catch((err) => console.log(`error ${err} while updating the info`));
+
+        resetForm();
+      }
       return;
     }
 
@@ -105,7 +139,10 @@ const App = () => {
       />
 
       <h2>Numbers:</h2>
-      <Persons filter={filteredState} deletePerson={deletePerson} />
+      <Persons
+        filter={filteredState() === "" ? persons : filteredState()}
+        deletePerson={deletePerson}
+      />
     </div>
   );
 };

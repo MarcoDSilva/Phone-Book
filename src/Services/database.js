@@ -2,13 +2,11 @@ import axios from "axios";
 const baseURL = "http://localhost:3001/persons";
 
 const getAll = async () => {
-  const res = await axios.get(baseURL);
-  return res.data;
+  return await axios.get(baseURL).then(res => res.data);
 };
 
 const create = async (newObj) => {
-  const res = await axios.post(baseURL, newObj);
-  return res.data;
+  return await axios.post(baseURL, newObj).then(res => res.data);
 };
 
 const remove = (id) => {
@@ -16,4 +14,9 @@ const remove = (id) => {
   return axios.delete(toDelete)
 };
 
-export default { getAll, create, remove };
+const update = (id, updatedInfo) => {
+  const toUpdate = `${baseURL}/${id}`
+  return axios.put(toUpdate, updatedInfo).then(res => res.data)
+}
+
+export default { getAll, create, remove, update };
