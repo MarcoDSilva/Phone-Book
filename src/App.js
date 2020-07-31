@@ -2,15 +2,9 @@ import React, { useState, useEffect } from "react";
 import Filter from "./Components/Filter.js";
 import PersonForm from "./Components/PersonForm.js";
 import Persons from "./Components/Persons.js";
+import Notification from './Components/Notification.js'
+import ErrorNotification from './Components/ErrorNotification.js'
 import services from "./Services/database.js";
-
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null;
-  }
-
-  return <div className="sucess">{message}</div>;
-};
 
 const App = () => {
   // array of people and method to update it
@@ -19,6 +13,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [newFilter, setNewFilter] = useState("");
   const [sucessNotification, setNewSucessNotification] = useState(null);
+  const [errorNotification, setNewErrorNotification] = useState(null)
 
   // aplying the data fetched with the hook
   useEffect(() => {
@@ -113,7 +108,14 @@ const App = () => {
     console.log(del);
 
     if (del === true) {
-      services.remove(id).catch((err) => console.log(err));
+      services.remove(id).catch((err) => {
+        console.log(`error while deleting: ${err}`)
+        setNewErrorNotification(`Couldn't delete person ${name}, register may already been deleted`)
+
+        setTimeout(() => {
+          setNewErrorNotification(null);
+        }, 3000)
+      });
       setPersons(persons.filter((p) => p.id !== id));
     } else {
       return;
@@ -148,6 +150,7 @@ const App = () => {
       <h2>Phonebook</h2>
 
       <Notification message={sucessNotification} />
+      <ErrorNotification message={errorNotification} />
       <Filter newFilter={newFilter} handleFilter={handleFilter} />
 
       <h2>Add a new:</h2>
