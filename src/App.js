@@ -53,17 +53,15 @@ const App = () => {
             number: newPhone,
           })
           .then((res) => {
-            let p = [];
-            for (let i = 0; i < persons.length; i++) {
-              if (persons[i].id === toUpdate.id) {
-                let obj = Object.assign({}, res);
-                p.push(obj);
-              } else {
-                p.push(persons[i]);
-              }
-            }
-
-            setPersons(p);
+            setPersons(
+              persons.map((p) => {
+                if (p.id === toUpdate.id) {
+                  return res;
+                } else {
+                  return p;
+                }
+              })
+            );
           })
           .catch((err) => console.log(`error ${err} while updating the info`));
 
